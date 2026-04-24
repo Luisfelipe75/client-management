@@ -199,8 +199,8 @@ const LoginPage = () => {
             {loading ? "Iniciando sesión..." : "INICIAR SESIÓN"}
           </Button>
         </Box>
-        <Grid container justifyContent="center" sx={{ mt: 3 }}>
-          <Grid item>
+        <Grid  sx={{ mt: 3 }}>
+          <Grid>
             <Typography component="span" variant="body2" color="text.secondary">¿No tiene una cuenta? </Typography>
             <Link component={RouterLink} to="/register" underline="none" sx={{ fontWeight: 700 }}> {/* Removed variant prop */}
               Regístrese

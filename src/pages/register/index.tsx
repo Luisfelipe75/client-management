@@ -183,8 +183,8 @@ const RegisterPage = () => {
             {loading ? "Creando cuenta..." : "REGISTRARME"}
           </Button>
         </Box>
-        <Grid container justifyContent="center" sx={{ mt: 3 }}>
-          <Grid item>
+        <Grid  sx={{ mt: 3 }}>
+          <Grid >
             <Typography component="span" variant="body2" color="text.secondary">¿Ya tienes una cuenta? </Typography>
             <Link component={RouterLink} to="/login" underline="none" sx={{ fontWeight: 700 }}> {/* Removed variant prop */}
               Iniciar Sesión

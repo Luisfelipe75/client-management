@@ -256,7 +256,6 @@ const Layout = () => {
                     {user?.username || "Usuario"}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {user?.role || "Administrador"} {/* Use user role if available */}
                   </Typography>
                 </Box>
               ) : null}

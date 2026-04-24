@@ -1,5 +1,6 @@
 import { useAuth } from "../../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { clienteService } from "../../services/clienteService";
 import { 
   Box, 
   Typography, 
@@ -11,6 +12,7 @@ import {
   useTheme 
 } from "@mui/material";
 import { 
+  People as PeopleIcon,
   Engineering as EngineeringIcon, 
   Speed as SpeedIcon, 
   ShieldOutlined as ShieldIcon, 
@@ -19,7 +21,6 @@ import {
   RocketLaunch as RocketIcon
 } from "@mui/icons-material";
 import { keyframes } from "@mui/system";
-import api from "../../services/api";
 
 // Animaciones personalizadas
 const float = keyframes`
@@ -45,11 +46,23 @@ const DashboardPage = () => {
   const theme = useTheme();
   const [metrics, setMetrics] = useState({ clients: 0, tasks: 24, health: 98 });
 
+  // Efecto para simular la actualización de métricas o cargar datos reales
   useEffect(() => {
-    api.get('/user/profile')
-      .then((response) => console.log("Profile:", response.data))
-      .catch((err) => console.error("Profile error:", err));
-  }, []);
+    const loadDashboardData = async () => {
+      if (!user?.userid) return;
+      try {
+        // Obtenemos los clientes para actualizar el contador real
+        const clientsData = await clienteService.getAll({ usuarioId: user.userid });
+        setMetrics(prev => ({
+          ...prev,
+          clients: clientsData.length
+        }));
+      } catch (error) {
+        console.error("Error al cargar métricas para el dashboard:", error);
+      }
+    };
+    loadDashboardData();
+  }, [user?.userid]);
 
   const promoCards = [
     {
@@ -103,10 +116,11 @@ const DashboardPage = () => {
       {/* Cuadros de Métricas Animados */}
       <Grid container spacing={3}>
         {[
+          { label: "Clientes Totales", val: metrics.clients, icon: <PeopleIcon />, color: theme.palette.info.main },
           { label: "Salud del Sistema", val: `${metrics.health}%`, icon: <RocketIcon />, color: "#3b82f6" },
           { label: "Tareas de Limpieza", val: metrics.tasks, icon: <EngineeringIcon />, color: "#8b5cf6" },
-        ].map((item, i) => (
-          <Grid item xs={12} sm={6} md={3} key={item.label}> {/* Changed key to item.label for better practice */}
+        ].map((item) => (
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.label}>
             <Paper
               variant="outlined"
               sx={{
@@ -134,8 +148,8 @@ const DashboardPage = () => {
           Mantenimiento de Elite para sus Clientes
         </Typography>
         <Grid container spacing={3}>
-          {promoCards.map((card, i) => ( // Using index as key here is less critical as the list is static
-            <Grid item xs={12} md={4} key={i}>
+          {promoCards.map((card, i) => (
+          <Grid size={{ xs: 12, md: 4 }} key={card.title}>
               <Paper
                 elevation={0}
                 sx={{

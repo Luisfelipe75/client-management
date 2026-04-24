@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         localStorage.setItem("token", token);
 
         const user: User = {
-          userid: userData.userId,
+          userid: userData.userid,
           username: userData.username,
         };
 
