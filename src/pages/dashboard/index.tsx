@@ -1,0 +1,233 @@
+import { useAuth } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
+import { 
+  Box, 
+  Typography, 
+  Grid, 
+  Paper, 
+  Stack, 
+  Button, 
+  alpha, 
+  useTheme 
+} from "@mui/material";
+import { 
+  Engineering as EngineeringIcon, 
+  Speed as SpeedIcon, 
+  ShieldOutlined as ShieldIcon, 
+  AutoGraph as GraphIcon,
+  ArrowForward as ArrowIcon,
+  RocketLaunch as RocketIcon
+} from "@mui/icons-material";
+import { keyframes } from "@mui/system";
+import api from "../../services/api";
+
+// Animaciones personalizadas
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+`;
+
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+`;
+
+const gradientMove = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
+
+const DashboardPage = () => {
+  const { user } = useAuth();
+  const theme = useTheme();
+  const [metrics, setMetrics] = useState({ clients: 0, tasks: 24, health: 98 });
+
+  useEffect(() => {
+    api.get('/user/profile')
+      .then((response) => console.log("Profile:", response.data))
+      .catch((err) => console.error("Profile error:", err));
+  }, []);
+
+  const promoCards = [
+    {
+      title: "Optimización de Datos",
+      desc: "Mantenimiento preventivo de bases de datos para garantizar velocidad de respuesta.",
+      icon: <SpeedIcon fontSize="large" />,
+      color: theme.palette.primary.main
+    }, // Using theme.palette.primary.main for consistency
+    {
+      title: "Seguridad Blindada",
+      desc: "Auditorías semanales de acceso y encriptación de información sensible de clientes.",
+      icon: <ShieldIcon fontSize="large" />,
+      color: theme.palette.success.main // Using theme.palette.success.main for consistency
+    },
+    {
+      title: "Escalabilidad Pro",
+      desc: "Preparamos su estructura para el crecimiento masivo sin pérdida de rendimiento.",
+      icon: <GraphIcon fontSize="large" />,
+      color: theme.palette.warning.main // Using theme.palette.warning.main for consistency
+    }
+  ];
+
+  return (
+    <Box sx={{ 
+      width: "100%", 
+      display: "flex", 
+      flexDirection: "column", 
+      gap: 4,
+      background: theme.palette.mode === 'light' ? `radial-gradient(circle at top right, ${alpha(theme.palette.primary.main, 0.05)}, transparent 400px)` : 'none',
+      borderRadius: 4
+    }}>
+      {/* Header de Bienvenida */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Stack>
+          <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+            Hola, {user?.username} 👋
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Este es el estado actual de su ecosistema de clientes.
+          </Typography>
+        </Stack>
+        <Button 
+          variant="contained" 
+          startIcon={<EngineeringIcon />}
+          sx={{ borderRadius: 2, px: 3, py: 1, boxShadow: 'none' }}
+        >
+          Solicitar Soporte
+        </Button>
+      </Box>
+
+      {/* Cuadros de Métricas Animados */}
+      <Grid container spacing={3}>
+        {[
+          { label: "Salud del Sistema", val: `${metrics.health}%`, icon: <RocketIcon />, color: "#3b82f6" },
+          { label: "Tareas de Limpieza", val: metrics.tasks, icon: <EngineeringIcon />, color: "#8b5cf6" },
+        ].map((item, i) => (
+          <Grid item xs={12} sm={6} md={3} key={item.label}> {/* Changed key to item.label for better practice */}
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 3,
+                borderRadius: 4,
+                textAlign: 'center',
+                animation: `${pulse} 4s infinite ease-in-out`,
+                borderColor: alpha(item.color, 0.3),
+                bgcolor: alpha(item.color, 0.02),
+              }}
+            >
+              <Box sx={{ color: item.color, mb: 1 }}>{item.icon}</Box>
+              <Typography variant="h4" sx={{ fontWeight: 800 }}>{item.val}</Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase' }}>
+                {item.label}
+              </Typography>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Propaganda: Tarjetas de Mantenimiento */}
+      <Box>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+          Mantenimiento de Elite para sus Clientes
+        </Typography>
+        <Grid container spacing={3}>
+          {promoCards.map((card, i) => ( // Using index as key here is less critical as the list is static
+            <Grid item xs={12} md={4} key={i}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  height: '100%',
+                  borderRadius: 4,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  transition: 'all 0.3s ease',
+                  animation: `${float} ${3 + i}s infinite ease-in-out`,
+                  '&:hover': {
+                    borderColor: card.color,
+                    transform: 'scale(1.02)',
+                    boxShadow: `0 10px 30px ${alpha(card.color, 0.1)}`,
+                    bgcolor: alpha(card.color, 0.01)
+                  }
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    width: 60, 
+                    height: 60, 
+                    borderRadius: 2, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    bgcolor: alpha(card.color, 0.1),
+                    color: card.color,
+                    mb: 3
+                  }}
+                >
+                  {card.icon}
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                  {card.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+                  {card.desc}
+                </Typography>
+                <Button 
+                  endIcon={<ArrowIcon />} 
+                  sx={{ color: card.color, fontWeight: 700, p: 0, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}
+                >
+                  Saber más
+                </Button>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* Cuadro Animado Final (Banner) */}
+      <Box
+        sx={{
+          p: 4,
+          borderRadius: 4,
+          position: 'relative',
+          overflow: 'hidden',
+          width: "100%",
+          background: `linear-gradient(-45deg, #1d4ed8, #93c5fd, #1e40af, #60a5fa)`,
+          backgroundSize: '400% 400%',
+          animation: `${gradientMove} 10s ease infinite`,
+          color: 'white',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 3
+        }}
+      >
+        <Stack spacing={1}>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>
+            ¿Su base de datos se siente pesada?
+          </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+            Realice una limpieza profunda de registros obsoletos y mejore la carga de su aplicación en un 40%.
+          </Typography>
+        </Stack>
+        <Button 
+          variant="contained" 
+          sx={{ 
+            bgcolor: 'white', 
+            color: 'primary.main', 
+            fontWeight: 800,
+            px: 4,
+            '&:hover': { bgcolor: alpha('#ffffff', 0.9) }
+          }}
+        >
+          OPTIMIZAR AHORA
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+export default DashboardPage;
