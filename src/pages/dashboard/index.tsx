@@ -1,6 +1,7 @@
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
-import { clienteService } from "../../services/clienteService";
+import { clienteService } from "../../services/clientService";
+import { useNavigate } from "react-router-dom";
 import { 
   Box, 
   Typography, 
@@ -12,6 +13,7 @@ import {
   useTheme 
 } from "@mui/material";
 import { 
+  Add as AddIcon,
   People as PeopleIcon,
   Engineering as EngineeringIcon, 
   Speed as SpeedIcon, 
@@ -43,6 +45,7 @@ const gradientMove = keyframes`
 
 const DashboardPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [metrics, setMetrics] = useState({ clients: 0, tasks: 24, health: 98 });
 
@@ -53,9 +56,11 @@ const DashboardPage = () => {
       try {
         // Obtenemos los clientes para actualizar el contador real
         const clientsData = await clienteService.getAll({ usuarioId: user.userid });
+        // Validación robusta para asegurar que tratamos con un arreglo
+        const clientsArray = Array.isArray(clientsData) ? clientsData : (clientsData as any)?.data || [];
         setMetrics(prev => ({
           ...prev,
-          clients: clientsData.length
+          clients: clientsArray.length
         }));
       } catch (error) {
         console.error("Error al cargar métricas para el dashboard:", error);
@@ -70,18 +75,18 @@ const DashboardPage = () => {
       desc: "Mantenimiento preventivo de bases de datos para garantizar velocidad de respuesta.",
       icon: <SpeedIcon fontSize="large" />,
       color: theme.palette.primary.main
-    }, // Using theme.palette.primary.main for consistency
+    }, 
     {
       title: "Seguridad Blindada",
       desc: "Auditorías semanales de acceso y encriptación de información sensible de clientes.",
       icon: <ShieldIcon fontSize="large" />,
-      color: theme.palette.success.main // Using theme.palette.success.main for consistency
+      color: theme.palette.success.main 
     },
     {
       title: "Escalabilidad Pro",
       desc: "Preparamos su estructura para el crecimiento masivo sin pérdida de rendimiento.",
       icon: <GraphIcon fontSize="large" />,
-      color: theme.palette.warning.main // Using theme.palette.warning.main for consistency
+      color: theme.palette.warning.main 
     }
   ];
 
@@ -90,31 +95,59 @@ const DashboardPage = () => {
       width: "100%", 
       display: "flex", 
       flexDirection: "column", 
-      gap: 4,
+      gap: { xs: 2, md: 4 }, // Reducimos el espacio entre secciones en móvil
+      px: { xs: 2, sm: 3, md: 0 }, // Padding lateral para contener los márgenes de los Grids
       background: theme.palette.mode === 'light' ? `radial-gradient(circle at top right, ${alpha(theme.palette.primary.main, 0.05)}, transparent 400px)` : 'none',
       borderRadius: 4
     }}>
       {/* Header de Bienvenida */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Stack>
-          <Typography variant="h4" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' }, 
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        gap: 2
+      }}>
+        <Stack sx={{ spacing: 0 }}>
+          <Typography variant="h4" sx={{
+            fontWeight: 800, 
+            letterSpacing: '-0.02em',
+            fontSize: { xs: '1.5rem', sm: '2.125rem' }, // Reducimos un poco más en móviles muy pequeños
+            wordBreak: 'break-word' // Evita que nombres largos corten el flujo
+          }}>
             Hola, {user?.username} 👋
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Este es el estado actual de su ecosistema de clientes.
           </Typography>
         </Stack>
-        <Button 
-          variant="contained" 
-          startIcon={<EngineeringIcon />}
-          sx={{ borderRadius: 2, px: 3, py: 1, boxShadow: 'none' }}
+        <Stack 
+          direction={{ xs: "column", sm: "row" }} 
+          spacing={1.5} 
+          sx={{ width: { xs: "100%", sm: "auto" } }}
         >
-          Solicitar Soporte
-        </Button>
+          <Button 
+            variant="outlined" 
+            startIcon={<AddIcon />}
+            sx={{ borderRadius: 2, px: 3, py: 1, fontWeight: 700, 
+              textTransform: 'none', width: { xs: '100%', sm: 'auto' } }}
+            onClick={() => navigate("/cliente/nuevo")}
+          >
+            Nuevo Cliente
+          </Button>
+          <Button 
+            variant="contained" 
+            startIcon={<EngineeringIcon />}
+            sx={{ borderRadius: 2, px: 3, py: 1, boxShadow: 'none', textTransform: 'none', width: { xs: '100%', sm: 'auto' } }}
+            onClick={() => navigate("/cliente/solicitud-soporte")}
+          >
+            Solicitar Soporte
+          </Button>
+        </Stack>
       </Box>
 
       {/* Cuadros de Métricas Animados */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         {[
           { label: "Clientes Totales", val: metrics.clients, icon: <PeopleIcon />, color: theme.palette.info.main },
           { label: "Salud del Sistema", val: `${metrics.health}%`, icon: <RocketIcon />, color: "#3b82f6" },
@@ -123,13 +156,19 @@ const DashboardPage = () => {
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.label}>
             <Paper
               variant="outlined"
+              onClick={() => item.label === "Clientes Totales" && navigate("/clientes")}
               sx={{
-                p: 3,
+                p: { xs: 2, sm: 3 }, // Padding interno más pequeño en móvil
                 borderRadius: 4,
                 textAlign: 'center',
                 animation: `${pulse} 4s infinite ease-in-out`,
                 borderColor: alpha(item.color, 0.3),
                 bgcolor: alpha(item.color, 0.02),
+                cursor: item.label === "Clientes Totales" ? 'pointer' : 'default',
+                '&:hover': {
+                  bgcolor: item.label === "Clientes Totales" ? alpha(item.color, 0.05) : alpha(item.color, 0.02),
+                  borderColor: item.label === "Clientes Totales" ? item.color : alpha(item.color, 0.3),
+                }
               }}
             >
               <Box sx={{ color: item.color, mb: 1 }}>{item.icon}</Box>
@@ -147,13 +186,13 @@ const DashboardPage = () => {
         <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
           Mantenimiento de Elite para sus Clientes
         </Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           {promoCards.map((card, i) => (
           <Grid size={{ xs: 12, md: 4 }} key={card.title}>
               <Paper
                 elevation={0}
                 sx={{
-                  p: 4,
+                  p: { xs: 2.5, sm: 4 }, // Reducimos padding interno
                   height: '100%',
                   borderRadius: 4,
                   border: '1px solid',
@@ -220,7 +259,7 @@ const DashboardPage = () => {
           gap: 3
         }}
       >
-        <Stack spacing={1}>
+        <Stack sx={{ spacing: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: 800 }}>
             ¿Su base de datos se siente pesada?
           </Typography>
@@ -236,7 +275,8 @@ const DashboardPage = () => {
             fontWeight: 800,
             px: 4,
             '&:hover': { bgcolor: alpha('#ffffff', 0.9) }
-          }}
+         }}
+         onClick={() => navigate("/cliente/optimizar")}
         >
           OPTIMIZAR AHORA
         </Button>

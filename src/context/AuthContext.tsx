@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { authService } from "../services/authService";
+import api from "../services/api";
 import type { LoginRequest, RegisterRequest, User } from "../types/auth.types";
 import { toast } from "sonner";
 
@@ -8,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   login: (credentials: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -36,7 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await authService.login(credentials);
       console.log("Login response:", response);
 
-      const { token, userid, username } = response;
+      const { data } = response;
+      const { token, userid, username } = data;
       if (!token) {
         throw new Error("No se recibió token");
       }
@@ -46,7 +48,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
       toast.success("Sesión iniciada correctamente");
-
     } catch (error: any) {
       console.error("Login error:", error);
       const message =
@@ -62,13 +63,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const response = await authService.register(data);
 
-      if (response.token) {
-        const { token, ...userData } = response;
+      // Verificamos si el backend devolvió un token en la propiedad data
+      if (response?.data?.token) {
+        const { token } = response.data; // Ajusta según la estructura real de tu respuesta
         localStorage.setItem("token", token);
 
         const user: User = {
-          userid: userData.userid,
-          username: userData.username,
+          userid: response.data.userid,
+          username: response.data.username,
         };
 
         localStorage.setItem("user", JSON.stringify(user));
@@ -84,10 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const logout = () => {
-    authService.logout();
-    setUser(null);
-    toast.info("Sesión cerrada");
+  const logout = async () => {
+    try {
+      // Notificamos al backend mientras el token aún está en localStorage
+      // El interceptor de api.ts adjuntará el Bearer token automáticamente
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("No se pudo cerrar sesión en el servidor:", error);
+    } finally {
+      // Limpiamos el estado local siempre, incluso si falla la red
+      setUser(null);
+      authService.logout();
+      toast.info("Sesión cerrada");
+    }
   };
 
   return (

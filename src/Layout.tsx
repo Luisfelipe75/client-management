@@ -14,7 +14,6 @@ import {
   IconButton,
   useMediaQuery,
   CssBaseline,
-  Button,
   Tooltip,
 } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme, alpha } from "@mui/material/styles";
@@ -162,34 +161,24 @@ const Layout = () => {
               </Tooltip>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  ANTARES
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Panel administrativo
+                  INNOVASOFT S.A
                 </Typography>
               </Box>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Button
-                startIcon={mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-                variant="outlined"
-                color="inherit"
-                onClick={toggleDarkMode}
-                sx={{
-                  borderColor: mode === "light" ? "rgba(255,255,255,0.38)" : "divider",
-                  color: "inherit",
-                  textTransform: "none",
-                }}
-              >
-                {mode === "dark" ? "Modo claro" : "Modo oscuro"}
-              </Button>
+              
+              <Tooltip title="Cambiar tema">
+                <IconButton color="inherit" onClick={toggleDarkMode}>
+                  {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Cerrar sesión">
                 <IconButton color="inherit" onClick={handleLogout}>
                   <LogoutIcon />
                 </IconButton>
               </Tooltip>
-              <Avatar
+              {/* <Avatar
                 sx={{
                   width: 36,
                   height: 36,
@@ -199,7 +188,7 @@ const Layout = () => {
                 }}
               >
                 {avatarLetter}
-              </Avatar>
+              </Avatar> */}
             </Box>
           </Toolbar>
         </AppBar>
@@ -278,7 +267,7 @@ const Layout = () => {
                 >
                   <HomeIcon fontSize="small" />
                 </ListItemIcon>
-                {open ? <ListItemText primary="Dashboard" /> : null}
+                {open ? <ListItemText primary="Inicio" /> : null}
               </ListItemButton>
               <ListItemButton
                 selected={isActive("/clientes")}

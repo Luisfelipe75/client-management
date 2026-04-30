@@ -41,7 +41,7 @@ const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<RegisterFormData>({ // Using imported type
+  const [formData, setFormData] = useState<RegisterFormData>({ 
     username: "",
     email: "",
     password: "",

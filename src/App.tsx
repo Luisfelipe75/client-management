@@ -4,9 +4,10 @@ import LoginPage from "./pages/login";
 import RegisterPage from "./pages/register";
 import ProtectedRoute from "./components/ProtectedRoute"; 
 import DashboardPage from "./pages/dashboard"; // Reverted to Dashboard
-import ClientePage from "./pages/cliente"; 
+import ClientePage from "./pages/client";
+import ClientCreatePage from "./pages/clientDetail"; 
 import LoginGuard from "./components/LoginGuard";
-import NotFound from "./pages/not-found"; // Verifica que este archivo exista en src/pages/not-found.tsx
+import NotFound from "./pages/not-found"; 
 
 const App = () => {
   return (
@@ -33,6 +34,7 @@ const App = () => {
       <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/clientes" element={<ClientePage />} />
+        <Route path="/cliente/nuevo" element={<ClientCreatePage />} />
         <Route index element={<DashboardPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>

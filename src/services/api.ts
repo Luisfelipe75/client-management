@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { authService } from './authService';
 
+const API_BASE_URL = import.meta.env.VITE_REACT_APP_API_BASE_URL;
 const api = axios.create({
-  baseURL: 'https://pruebareactjs.test-class.com/Api/'
+  baseURL: API_BASE_URL
 });
 
 // Token automático en TODAS las requests

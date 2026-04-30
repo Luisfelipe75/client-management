@@ -1,5 +1,5 @@
 import { Box, Typography, Button } from "@mui/material";
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlineOutlined';
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 import { useNavigate } from "react-router-dom";
 
 const NotFound = () => {
@@ -18,7 +18,7 @@ const NotFound = () => {
     >
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ErrorOutlineIcon sx={{ fontSize: 90, color: "primary.main" }} />
+          <WarningAmberOutlinedIcon sx={{ fontSize: 90, color: "primary.main" }} />
           <Typography
             variant="h1"
             sx={{

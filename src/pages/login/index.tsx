@@ -23,7 +23,6 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import React, { useState } from "react";
 import * as yup from "yup"; // Esta línea es IMPRESCINDIBLE para el bloque catch
 import { keyframes } from "@mui/system";
-import { toast } from "sonner";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LoginValidate, type LoginFormData } from "../../utils/ValidateForm";
@@ -73,7 +72,6 @@ const LoginPage = () => {
     try {
       await LoginValidate.validate(formData, { abortEarly: false });
       setErrors({});
-      console.log("Datos del formulario:", formData);
       await login(formData);
 
       if (remember) {
@@ -90,10 +88,10 @@ const LoginPage = () => {
           if (err.path) validationErrors[err.path as keyof LoginFormData] = err.message;
         });
         setErrors(validationErrors);
-        toast.error("Corrige los campos marcados para continuar.");
       } else {
+        // El error ya fue notificado con un toast específico dentro de AuthContext.login()
+        // Solo lo registramos en consola para debugging.
         console.error("Error en login:", error);
-        toast.error("Error al iniciar sesión. Revisa tus credenciales.");
       }
     } finally {
       setLoading(false);

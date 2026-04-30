@@ -21,8 +21,11 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
+  status: string;
+  message: string;
+  data: {
     token: string;
     userid: string;
     username: string;
-    expiration: string;
+  };
 }

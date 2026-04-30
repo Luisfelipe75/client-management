@@ -1,4 +1,4 @@
 export interface Interes {
-  id: string; // UUID generado automáticamente
-  descripcion: string; // tamaño máximo 200
+  id: string;
+  nombre: string;
 }
